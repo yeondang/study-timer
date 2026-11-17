@@ -4,6 +4,7 @@ import { useAwayDetection } from '@/hooks/useAwayDetection'
 import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useTimerStore } from '@/store/useTimerStore'
+import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -15,6 +16,7 @@ const menus = [
 
 export default function Layout() {
   useAwayDetection() // 이탈 감지 (모든 페이지에서 작동)
+  useLiveStatusSync() // 내 상태를 그룹원에게 공유
 
   const session = useAuthStore((s) => s.session)
   const signOut = useAuthStore((s) => s.signOut)

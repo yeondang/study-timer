@@ -40,3 +40,27 @@ export interface SubjectGoal {
   goalDate: string // 'yyyy-MM-dd'
   goalMinutes: number
 }
+
+export interface Group {
+  id: string
+  name: string
+  inviteCode: string
+  ownerId: string
+}
+
+export type LiveState = 'studying' | 'resting' | 'away' | 'offline'
+
+export interface LiveStatus {
+  userId: string
+  status: LiveState
+  subjectName: string | null
+  currentStartedAt: number | null // 지금 달리는 구간의 시작 시각 (ms)
+  todaySeconds: number // 오늘 누적 (지금 달리는 구간 제외)
+  updatedAt: number
+}
+
+export interface GroupMember {
+  userId: string
+  nickname: string
+  isOwner: boolean
+}
