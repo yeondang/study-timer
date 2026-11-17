@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTimerStore } from '@/store/useTimerStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
+import type { Todo } from '@/types'
 
 export default function TodoList({ date }: { date: string }) {
   const subjects = useTimerStore((s) => s.subjects)
@@ -14,6 +15,22 @@ export default function TodoList({ date }: { date: string }) {
 
   const list = todos.filter((t) => t.todoDate === date)
   const doneCount = list.filter((t) => t.isDone).length
+
+  // 과목별 묶음 만들기 (과목 순서 유지, 과목 없는 것은 마지막)
+  const groups: { key: string; name: string; color: string; items: Todo[] }[] = subjects
+    .map((s) => ({
+      key: s.id,
+      name: s.name,
+      color: s.color,
+      items: list.filter((t) => t.subjectId === s.id),
+    }))
+    .filter((g) => g.items.length > 0)
+
+  const known = new Set(subjects.map((s) => s.id))
+  const noSubject = list.filter((t) => !t.subjectId || !known.has(t.subjectId))
+  if (noSubject.length > 0) {
+    groups.push({ key: 'none', name: '과목 없음', color: '#94A3B8', items: noSubject })
+  }
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,51 +75,62 @@ export default function TodoList({ date }: { date: string }) {
         </button>
       </form>
 
-      <ul className="mt-4 space-y-2">
-        {list.length === 0 && (
-          <li className="py-4 text-center text-sm text-slate-400">
-            이 날의 할 일이 없어요. 위에서 추가해 보세요.
-          </li>
-        )}
-        {list.map((t) => {
-          const subject = subjects.find((s) => s.id === t.subjectId)
+      {list.length === 0 && (
+        <p className="py-6 text-center text-sm text-slate-400">
+          이 날의 할 일이 없어요. 위에서 추가해 보세요.
+        </p>
+      )}
+
+      <div className="mt-4 space-y-5">
+        {groups.map((g) => {
+          const done = g.items.filter((t) => t.isDone).length
           return (
-            <li
-              key={t.id}
-              className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2"
-            >
-              <input
-                type="checkbox"
-                checked={t.isDone}
-                onChange={() => toggleTodo(t.id)}
-                className="h-4 w-4"
-              />
-              <span
-                className={`flex-1 text-sm ${
-                  t.isDone ? 'text-slate-400 line-through' : ''
-                }`}
-              >
-                {t.title}
-              </span>
-              {subject && (
+            <div key={g.key}>
+              <div className="mb-2 flex items-center gap-2 text-sm">
                 <span
-                  className="rounded-full px-2 py-0.5 text-xs text-white"
-                  style={{ backgroundColor: subject.color }}
-                >
-                  {subject.name}
+                  className="inline-block h-3 w-3 rounded-full"
+                  style={{ backgroundColor: g.color }}
+                />
+                <span className="font-semibold">{g.name}</span>
+                <span className="text-xs text-slate-400">
+                  {done}/{g.items.length}
                 </span>
-              )}
-              <button
-                onClick={() => removeTodo(t.id)}
-                className="text-slate-300 hover:text-red-500"
-                aria-label="삭제"
-              >
-                ×
-              </button>
-            </li>
+              </div>
+
+              <ul className="space-y-2">
+                {g.items.map((t) => (
+                  <li
+                    key={t.id}
+                    className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2"
+                    style={{ borderLeft: `4px solid ${g.color}` }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={t.isDone}
+                      onChange={() => toggleTodo(t.id)}
+                      className="h-4 w-4"
+                    />
+                    <span
+                      className={`flex-1 text-sm ${
+                        t.isDone ? 'text-slate-400 line-through' : ''
+                      }`}
+                    >
+                      {t.title}
+                    </span>
+                    <button
+                      onClick={() => removeTodo(t.id)}
+                      className="text-slate-300 hover:text-red-500"
+                      aria-label="삭제"
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )
         })}
-      </ul>
+      </div>
     </section>
   )
 }

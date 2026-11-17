@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/useAuthStore'
+import GoogleIcon from '@/components/icons/GoogleIcon'
 
 type Mode = 'login' | 'signup'
 
@@ -114,8 +115,9 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={handleGoogle}
-          className="w-full rounded-lg border border-slate-300 py-2.5 text-sm font-medium hover:bg-slate-50"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 py-2.5 text-sm font-medium hover:bg-slate-50"
         >
+          <GoogleIcon />
           Google로 계속하기
         </button>
 

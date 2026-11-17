@@ -91,6 +91,7 @@ interface TimerState {
   addSubject: (name: string) => Promise<void>
   removeSubject: (id: string) => Promise<void>
   selectSubject: (id: string) => void
+  updateSubjectColor: (id: string, color: string) => void
   start: () => void
   pause: () => void
   reset: () => void
@@ -118,6 +119,25 @@ let loadingPromise: Promise<void> | null = null // 동시에 두 번 불러오�
 let loadedUserId: string | null = null
 let finishing = false // "종료 · 저장" 두 번 눌림 방지
 let settingsTimer: number | undefined
+const colorTimers = new Map<string, number>()
+
+// 색상은 슬라이더를 움직이는 동안 계속 바뀌므로, 멈춘 뒤 0.6초 후 한 번만 저장
+function saveSubjectColorLater(id: string, color: string) {
+  window.clearTimeout(colorTimers.get(id))
+  colorTimers.set(
+    id,
+    window.setTimeout(async () => {
+      colorTimers.delete(id)
+      const r1 = await supabase.from('subjects').update({ color }).eq('id', id)
+      // 지난 공부 기록의 색도 같이 바꿔서 통계 색이 일치하게 함
+      const r2 = await supabase
+        .from('study_sessions')
+        .update({ subject_color: color })
+        .eq('subject_id', id)
+      if (r1.error || r2.error) console.error('[색상 저장 실패]', r1.error ?? r2.error)
+    }, 600)
+  )
+}
 
 // 설정은 슬라이더를 움직이는 동안 여러 번 바뀌므로, 멈춘 뒤 0.6초 후에 한 번만 저장
 function saveSettingsLater(settings: Settings) {
@@ -280,6 +300,16 @@ export const useTimerStore = create<TimerState>()(
       selectSubject: (id) => {
         if (get().status !== 'idle') return // 공부 중에는 과목 변경 불가
         set({ selectedSubjectId: id })
+      },
+
+            updateSubjectColor: (id, color) => {
+        set((s) => ({
+          subjects: s.subjects.map((x) => (x.id === id ? { ...x, color } : x)),
+          sessions: s.sessions.map((x) =>
+            x.subjectId === id ? { ...x, subjectColor: color } : x
+          ),
+        }))
+        saveSubjectColorLater(id, color)
       },
 
       // ---------- 타이머 ----------

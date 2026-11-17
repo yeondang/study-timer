@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ColorEditor from '@/components/timer/ColorEditor'
 import { useTimerStore } from '@/store/useTimerStore'
 
 export default function SubjectSelector() {
@@ -8,9 +9,12 @@ export default function SubjectSelector() {
   const selectSubject = useTimerStore((s) => s.selectSubject)
   const addSubject = useTimerStore((s) => s.addSubject)
   const removeSubject = useTimerStore((s) => s.removeSubject)
+  const updateSubjectColor = useTimerStore((s) => s.updateSubjectColor)
   const [name, setName] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const locked = status !== 'idle'
+  const editing = subjects.find((s) => s.id === editingId)
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,16 +37,25 @@ export default function SubjectSelector() {
               } ${locked && !selected ? 'opacity-40' : ''}`}
               style={selected ? { borderColor: s.color } : undefined}
             >
+              {/* 색 점: 누르면 색상 편집 */}
+              <button
+                type="button"
+                onClick={() => setEditingId(editingId === s.id ? null : s.id)}
+                className="py-1.5 pl-3 pr-1"
+                aria-label={`${s.name} 색상 변경`}
+                title="색상 변경"
+              >
+                <span
+                  className="block h-3.5 w-3.5 rounded-full ring-1 ring-slate-200"
+                  style={{ backgroundColor: s.color }}
+                />
+              </button>
               <button
                 type="button"
                 disabled={locked}
                 onClick={() => selectSubject(s.id)}
-                className="flex items-center gap-2 py-1.5 pl-3 pr-2 disabled:cursor-not-allowed"
+                className="py-1.5 pl-1 pr-2 disabled:cursor-not-allowed"
               >
-                <span
-                  className="inline-block h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: s.color }}
-                />
                 {s.name}
               </button>
               <button
@@ -63,6 +76,24 @@ export default function SubjectSelector() {
         })}
       </div>
 
+      {editing && (
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">'{editing.name}' 색상</span>
+            <button
+              onClick={() => setEditingId(null)}
+              className="text-xs text-slate-400 hover:text-slate-600"
+            >
+              닫기
+            </button>
+          </div>
+          <ColorEditor
+            color={editing.color}
+            onChange={(hex) => updateSubjectColor(editing.id, hex)}
+          />
+        </div>
+      )}
+
       <form onSubmit={handleAdd} className="mt-4 flex gap-2">
         <input
           value={name}
@@ -79,11 +110,10 @@ export default function SubjectSelector() {
         </button>
       </form>
 
-      {locked && (
-        <p className="mt-3 text-xs text-slate-400">
-          공부 중에는 과목을 바꿀 수 없어요. 종료하거나 초기화한 뒤 변경하세요.
-        </p>
-      )}
+      <p className="mt-3 text-xs text-slate-400">
+        색 점을 누르면 색상을 바꿀 수 있어요.
+        {locked && ' 공부 중에는 과목 선택·삭제가 잠겨요.'}
+      </p>
     </div>
   )
 }
