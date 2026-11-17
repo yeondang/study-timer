@@ -1,10 +1,12 @@
 import { format } from 'date-fns'
 import { supabase } from '@/lib/supabase'
+import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
 import type { LiveState } from '@/types'
 
 function buildSnapshot(forceOffline: boolean) {
   const s = useTimerStore.getState()
+  const p = useProfileStore.getState()
   const today = format(new Date(), 'yyyy-MM-dd')
 
   // 오늘 "종료 · 저장"된 시간
@@ -26,9 +28,10 @@ function buildSnapshot(forceOffline: boolean) {
   return {
     status,
     subject_name: live ? (subject?.name ?? null) : null,
-    // 달리는 중일 때만 시작 시각을 저장 (그룹원 화면에서 시계 계산용)
     current_started_at: running ? new Date(s.runStartedAt as number).toISOString() : null,
     today_seconds: savedToday + (live ? Math.floor(s.accumulatedMs / 1000) : 0),
+    // 프로필을 아직 못 불러왔으면 빈 값으로 덮어쓰지 않도록 아예 보내지 않음
+    ...(p.loaded ? { custom_emoji: p.statusEmoji, custom_text: p.statusText } : {}),
   }
 }
 

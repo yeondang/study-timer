@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { isSameDay } from 'date-fns'
+import Avatar from '@/components/common/Avatar'
 import { formatTime } from '@/lib/time'
 import type { GroupMember, LiveState, LiveStatus } from '@/types'
 
@@ -65,6 +66,12 @@ export default function MemberStatusList({ members, live, myId }: Props) {
       <ul className="space-y-2">
         {rows.map(({ m, state, seconds, subject }) => {
           const b = BADGE[state]
+          // 실시간 행이 있으면 그것이 기준, 없으면 프로필에 저장된 값
+          const l = live[m.userId]
+          const customEmoji = l ? l.customEmoji : m.statusEmoji
+          const customText = l ? l.customText : m.statusText
+          const hasCustom = Boolean(customEmoji || customText)
+
           return (
             <li
               key={m.userId}
@@ -72,20 +79,32 @@ export default function MemberStatusList({ members, live, myId }: Props) {
                 m.userId === myId ? 'border-blue-200 bg-blue-50' : 'border-slate-100'
               }`}
             >
-              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${b.dot}`} />
+              <div className="relative">
+                <Avatar url={m.avatarUrl} name={m.nickname} size={44} />
+                <span
+                  className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white ${b.dot}`}
+                />
+              </div>
+
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-medium">{m.nickname}</span>
                   {m.userId === myId && <span className="text-xs text-blue-600">나</span>}
-                  {m.isOwner && <span className="text-xs text-slate-400">👑 그룹장</span>}
+                  {m.isOwner && <span className="text-xs text-slate-400">👑</span>}
                 </div>
-                <div className="mt-0.5 flex items-center gap-2 text-xs">
+                {hasCustom && (
+                  <div className="truncate text-xs text-slate-500">
+                    {customEmoji} {customText}
+                  </div>
+                )}
+                <div className="mt-1 flex items-center gap-2 text-xs">
                   <span className={`rounded-full px-2 py-0.5 font-medium ${b.badge}`}>
                     {b.text}
                   </span>
                   {subject && <span className="text-slate-500">{subject}</span>}
                 </div>
               </div>
+
               <div className="text-right">
                 <div className="font-mono text-lg font-bold tabular-nums">
                   {formatTime(seconds)}

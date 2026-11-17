@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import Avatar from '@/components/common/Avatar'
 import { useAwayDetection } from '@/hooks/useAwayDetection'
+import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
 import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
+import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
-import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -24,17 +26,21 @@ export default function Layout() {
 
   const loadTimer = useTimerStore((s) => s.loadAll)
   const loadPlanner = usePlannerStore((s) => s.loadAll)
+  const loadProfile = useProfileStore((s) => s.loadProfile)
   const timerLoaded = useTimerStore((s) => s.loaded)
   const plannerLoaded = usePlannerStore((s) => s.loaded)
   const timerError = useTimerStore((s) => s.loadError)
   const plannerError = usePlannerStore((s) => s.loadError)
+  const nickname = useProfileStore((s) => s.nickname)
+  const avatarUrl = useProfileStore((s) => s.avatarUrl)
 
   // 로그인되면 DB에서 내 데이터 불러오기
   useEffect(() => {
     if (!userId) return
     loadTimer()
     loadPlanner()
-  }, [userId, loadTimer, loadPlanner])
+    loadProfile()
+  }, [userId, loadTimer, loadPlanner, loadProfile])
 
   const error = timerError ?? plannerError
 
@@ -87,9 +93,12 @@ export default function Layout() {
           ))}
 
           <div className="ml-auto flex items-center gap-2">
-            <span className="hidden max-w-[160px] truncate text-xs text-slate-400 sm:inline">
-              {session?.user.email}
-            </span>
+            <NavLink to="/settings" className="flex items-center gap-2" title="프로필 설정">
+              <Avatar url={avatarUrl} name={nickname || session?.user.email || '?'} size={28} />
+              <span className="hidden max-w-[120px] truncate text-xs text-slate-600 sm:inline">
+                {nickname || session?.user.email}
+              </span>
+            </NavLink>
             <button
               onClick={() => {
                 if (confirm('로그아웃할까요?')) signOut()

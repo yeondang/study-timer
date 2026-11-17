@@ -57,10 +57,15 @@ export interface LiveStatus {
   currentStartedAt: number | null // 지금 달리는 구간의 시작 시각 (ms)
   todaySeconds: number // 오늘 누적 (지금 달리는 구간 제외)
   updatedAt: number
+  customEmoji: string
+  customText: string
 }
 
 export interface GroupMember {
   userId: string
   nickname: string
   isOwner: boolean
+  avatarUrl: string | null
+  statusEmoji: string
+  statusText: string
 }

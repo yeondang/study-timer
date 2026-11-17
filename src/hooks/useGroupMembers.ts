@@ -9,6 +9,16 @@ interface LiveRow {
   current_started_at: string | null
   today_seconds: number
   updated_at: string
+  custom_emoji?: string | null
+  custom_text?: string | null
+}
+
+interface ProfileRow {
+  id: string
+  nickname: string
+  avatar_url: string | null
+  status_emoji: string | null
+  status_text: string | null
 }
 
 const toLive = (r: LiveRow): LiveStatus => ({
@@ -18,6 +28,8 @@ const toLive = (r: LiveRow): LiveStatus => ({
   currentStartedAt: r.current_started_at ? new Date(r.current_started_at).getTime() : null,
   todaySeconds: r.today_seconds,
   updatedAt: new Date(r.updated_at).getTime(),
+  customEmoji: r.custom_emoji ?? '',
+  customText: r.custom_text ?? '',
 })
 
 export function useGroupMembers(groupId: string | null, ownerId: string | null) {
@@ -48,7 +60,10 @@ export function useGroupMembers(groupId: string | null, ownerId: string | null) 
     }
 
     const [profRes, liveRes] = await Promise.all([
-      supabase.from('profiles').select('id,nickname').in('id', ids),
+      supabase
+        .from('profiles')
+        .select('id,nickname,avatar_url,status_emoji,status_text')
+        .in('id', ids),
       supabase.from('live_status').select('*').in('user_id', ids),
     ])
     const err = profRes.error ?? liveRes.error
@@ -57,20 +72,24 @@ export function useGroupMembers(groupId: string | null, ownerId: string | null) 
       return
     }
 
-    const nicknames = new Map<string, string>(
-      (profRes.data ?? []).map((p: { id: string; nickname: string }) => [p.id, p.nickname])
+    const profiles = new Map<string, ProfileRow>(
+      ((profRes.data ?? []) as ProfileRow[]).map((p) => [p.id, p])
     )
     setMembers(
-      ids.map((id: string) => ({
-        userId: id,
-        nickname: nicknames.get(id) ?? '알 수 없음',
-        isOwner: id === ownerId,
-      }))
+      ids.map((id: string) => {
+        const p = profiles.get(id)
+        return {
+          userId: id,
+          nickname: p?.nickname ?? '알 수 없음',
+          isOwner: id === ownerId,
+          avatarUrl: p?.avatar_url ?? null,
+          statusEmoji: p?.status_emoji ?? '',
+          statusText: p?.status_text ?? '',
+        }
+      })
     )
     setLive(
-      Object.fromEntries(
-        (liveRes.data ?? []).map((r: LiveRow) => [r.user_id, toLive(r)])
-      )
+      Object.fromEntries(((liveRes.data ?? []) as LiveRow[]).map((r) => [r.user_id, toLive(r)]))
     )
     setError('')
   }, [groupId, ownerId])

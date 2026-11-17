@@ -4,6 +4,7 @@ import { publishOffline } from '@/lib/liveStatus'
 import { supabase } from '@/lib/supabase'
 import { useGroupStore } from '@/store/useGroupStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
+import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
 
 interface AuthState {
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
         useTimerStore.getState().clearAll()
         usePlannerStore.getState().clearAll()
         useGroupStore.getState().clearAll()
+        useProfileStore.getState().clearAll()
       }
     })
 
