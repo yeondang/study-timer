@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
+import BugReportButton from '@/components/common/BugReportButton'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -113,6 +114,7 @@ export default function Layout() {
       <main className="mx-auto max-w-4xl">
         <Outlet />
       </main>
+      <BugReportButton />
     </div>
   )
 }
