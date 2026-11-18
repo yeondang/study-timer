@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import GoogleIcon from '@/components/icons/GoogleIcon'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/useAuthStore'
-import GoogleIcon from '@/components/icons/GoogleIcon'
 
 type Mode = 'login' | 'signup'
 
-// Supabase 영어 오류를 한국어로
 function toKorean(message: string): string {
   const m = message.toLowerCase()
   if (m.includes('invalid login credentials')) return '이메일 또는 비밀번호가 올바르지 않아요.'
@@ -27,7 +26,6 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
 
-  // 이미 로그인된 상태면 메인으로
   if (session) return <Navigate to="/" replace />
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,16 +37,13 @@ export default function LoginPage() {
     if (mode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setError(toKorean(error.message))
-      // 성공하면 session이 바뀌면서 자동으로 메인 화면으로 이동
     } else {
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) {
         setError(toKorean(error.message))
       } else if (data.user && data.user.identities?.length === 0) {
-        // 이미 가입된 이메일 (인증 메일 설정이 켜져 있을 때의 응답 형태)
         setError('이미 가입된 이메일이에요. 로그인해 주세요.')
       } else if (!data.session) {
-        // 이메일 인증이 켜져 있어서 세션이 아직 없는 경우
         setInfo('가입 확인 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.')
         setMode('login')
       }

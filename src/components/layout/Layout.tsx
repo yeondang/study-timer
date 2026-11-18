@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import Avatar from '@/components/common/Avatar'
+import BugReportButton from '@/components/common/BugReportButton'
 import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
 import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
-import BugReportButton from '@/components/common/BugReportButton'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -33,7 +33,6 @@ export default function Layout() {
   const nickname = useProfileStore((s) => s.nickname)
   const avatarUrl = useProfileStore((s) => s.avatarUrl)
 
-  // 로그인되면 DB에서 내 데이터 불러오기
   useEffect(() => {
     if (!userId) return
     loadTimer()
@@ -81,9 +80,7 @@ export default function Layout() {
               end={m.to === '/'}
               className={({ isActive }) =>
                 `rounded-lg px-3 py-1.5 text-sm font-medium ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                  isActive ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`
               }
             >
