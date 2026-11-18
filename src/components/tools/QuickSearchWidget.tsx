@@ -70,9 +70,6 @@ export default function QuickSearchWidget() {
         </div>
       </form>
 
-      <p className="mt-3 text-xs text-slate-400">
-        여기서 연 탭으로 이동하는 것은 이탈로 보지 않아요. (최대 5분)
-      </p>
     </div>
   )
 }

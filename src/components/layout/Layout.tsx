@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import Avatar from '@/components/common/Avatar'
-import { useAwayDetection } from '@/hooks/useAwayDetection'
 import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
 import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
@@ -18,7 +17,6 @@ const menus = [
 ]
 
 export default function Layout() {
-  useAwayDetection() // 이탈 감지 (모든 페이지에서 작동)
   useLiveStatusSync() // 내 상태를 그룹원에게 공유
 
   const session = useAuthStore((s) => s.session)

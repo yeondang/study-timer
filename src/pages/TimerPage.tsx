@@ -4,7 +4,6 @@ import TimerDisplay from '@/components/timer/TimerDisplay'
 import { useElapsedSeconds } from '@/hooks/useElapsedSeconds'
 import { formatDuration } from '@/lib/time'
 import { useTimerStore } from '@/store/useTimerStore'
-import AwayBadge from '@/components/timer/AwayBadge'
 import QuickSearchWidget from '@/components/tools/QuickSearchWidget'
 
 export default function TimerPage() {
@@ -43,8 +42,6 @@ export default function TimerPage() {
         subjectName={subject?.name}
         subjectColor={subject?.color}
       />
-
-      <AwayBadge />
 
       <div className="flex flex-wrap justify-center gap-3">
         {status === 'running' ? (

@@ -11,12 +11,11 @@ import {
   subMonths,
   subWeeks,
 } from 'date-fns'
-import AwayStats from '@/components/stats/AwayStats'
+
 import CalendarView from '@/components/stats/CalendarView'
 import PeriodChart from '@/components/stats/PeriodChart'
 import SubjectPieChart from '@/components/stats/SubjectPieChart'
 import {
-  awayBySubject,
   buildDaily,
   secondsByDate,
   subjectStatsOfDate,
@@ -158,7 +157,7 @@ function PeriodView({
   const startKey = key(start)
   const endKey = key(end)
   const subjectStats = subjectStatsOfRange(sessions, startKey, endKey)
-  const subjectAway = awayBySubject(sessions, startKey, endKey)
+
 
   const move = (dir: 1 | -1) =>
     setAnchor(isWeek ? (dir === 1 ? addWeeks(anchor, 1) : subWeeks(anchor, 1)) : dir === 1 ? addMonths(anchor, 1) : subMonths(anchor, 1))
@@ -242,12 +241,7 @@ function PeriodView({
         </section>
       )}
 
-      <AwayStats
-        days={days}
-        summary={summary}
-        bySubject={subjectAway}
-        tickInterval={isWeek ? 0 : 1}
-      />
+      
     </>
   )
 }
