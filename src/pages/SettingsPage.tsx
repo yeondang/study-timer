@@ -67,15 +67,6 @@ export default function SettingsPage() {
     <div className="space-y-4 p-6">
       <h1 className="text-2xl font-bold">⚙️ 설정</h1>
 
-      {/* 테마 색상 */}
-      <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="font-semibold">테마 색상</h2>
-        <p className="mb-4 mt-1 text-sm text-slate-500">
-          버튼, 메뉴 등 앱 전체의 포인트 색을 바꿔요. 이 기기에 저장돼요.
-        </p>
-        <ThemePicker />
-      </section>
-
       {/* 프로필 */}
       <section className="rounded-2xl bg-white p-5 shadow-sm">
         <h2 className="font-semibold">프로필</h2>
@@ -210,6 +201,15 @@ export default function SettingsPage() {
           </button>
         </div>
         <Msg area="status" />
+      </section>
+      
+            {/* 테마 색상 */}
+      <section className="rounded-2xl bg-white p-5 shadow-sm">
+        <h2 className="font-semibold">테마 색상</h2>
+        <p className="mb-4 mt-1 text-sm text-slate-500">
+          버튼, 메뉴 등 앱 전체의 포인트 색을 바꿔요. 이 기기에 저장돼요.
+        </p>
+        <ThemePicker />
       </section>
     </div>
   )
