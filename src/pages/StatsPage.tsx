@@ -102,10 +102,6 @@ function DayView({
   const stats = subjectStatsOfDate(sessions, selected)
   const total = secondsMap[selected] ?? 0
 
-  const daySessions = sessions.filter((s) => s.studyDate === selected)
-  const awayCount = daySessions.reduce((sum, s) => sum + s.awayCount, 0)
-  const awaySeconds = daySessions.reduce((sum, s) => sum + s.awaySeconds, 0)
-
   return (
     <>
       <CalendarView secondsMap={secondsMap} selected={selected} onSelect={onSelect} />
@@ -120,9 +116,6 @@ function DayView({
         ) : (
           <>
             <div className="mt-2 text-3xl font-bold">{formatDuration(total)}</div>
-            <div className="mt-1 text-sm text-slate-500">
-              이탈 {awayCount}회 · 자리 비움 {formatDuration(awaySeconds)}
-            </div>
             <div className="mt-4">
               <SubjectPieChart data={stats} />
             </div>
