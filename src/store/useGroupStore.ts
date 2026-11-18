@@ -5,6 +5,8 @@ import type { Group } from '@/types'
 interface GroupRow {
   id: string
   name: string
+  description: string | null
+  max_members: number | null
   invite_code: string
   owner_id: string
 }
@@ -12,12 +14,18 @@ interface GroupRow {
 const toGroup = (r: GroupRow): Group => ({
   id: r.id,
   name: r.name,
+  description: r.description ?? '',
+  maxMembers: r.max_members ?? 20,
   inviteCode: r.invite_code,
   ownerId: r.owner_id,
 })
 
 function toKorean(message: string): string {
   if (message.includes('invalid_code')) return '초대 코드가 올바르지 않아요. 다시 확인해 주세요.'
+  if (message.includes('group_full')) return '그룹 정원이 가득 찼어요.'
+  if (message.includes('max_below_members'))
+    return '현재 멤버 수보다 적게 줄일 수 없어요. 먼저 멤버를 내보내 주세요.'
+  if (message.includes('not_owner')) return '그룹장만 할 수 있어요.'
   if (message.includes('not_authenticated')) return '로그인이 필요해요.'
   return message
 }
@@ -25,6 +33,12 @@ function toKorean(message: string): string {
 interface Result {
   error: string | null
   id: string | null
+}
+
+export interface GroupPatch {
+  name: string
+  description: string
+  maxMembers: number
 }
 
 interface GroupState {
@@ -38,6 +52,9 @@ interface GroupState {
   joinGroup: (code: string) => Promise<Result>
   leaveGroup: (groupId: string) => Promise<string | null>
   deleteGroup: (groupId: string) => Promise<string | null>
+  updateGroup: (groupId: string, patch: GroupPatch) => Promise<string | null>
+  regenerateCode: (groupId: string) => Promise<string | null>
+  kickMember: (groupId: string, userId: string) => Promise<string | null>
 }
 
 export const useGroupStore = create<GroupState>()((set, get) => ({
@@ -48,14 +65,14 @@ export const useGroupStore = create<GroupState>()((set, get) => ({
   loadGroups: async () => {
     const { data, error } = await supabase
       .from('groups')
-      .select('id,name,invite_code,owner_id')
+      .select('id,name,description,max_members,invite_code,owner_id')
       .order('created_at')
     if (error) {
       set({ loadError: error.message })
       return
     }
     set({
-      groups: (data ?? []).map((r: GroupRow) => toGroup(r)),
+      groups: (data ?? []).map((r) => toGroup(r as GroupRow)),
       loaded: true,
       loadError: null,
     })
@@ -85,7 +102,6 @@ export const useGroupStore = create<GroupState>()((set, get) => ({
     return { error: null, id: row?.id ?? null }
   },
 
-  // 그룹원이 탈퇴
   leaveGroup: async (groupId) => {
     const { data } = await supabase.auth.getSession()
     const uid = data.session?.user.id
@@ -95,16 +111,52 @@ export const useGroupStore = create<GroupState>()((set, get) => ({
       .delete()
       .eq('group_id', groupId)
       .eq('user_id', uid)
-    if (error) return error.message
+    if (error) return toKorean(error.message)
     await get().loadGroups()
     return null
   },
 
-  // 그룹장이 그룹 삭제 (멤버 정보도 함께 삭제됨)
   deleteGroup: async (groupId) => {
     const { error } = await supabase.from('groups').delete().eq('id', groupId)
-    if (error) return error.message
+    if (error) return toKorean(error.message)
     await get().loadGroups()
+    return null
+  },
+
+  // 그룹장: 이름 / 소개 / 최대 인원 수정
+  updateGroup: async (groupId, patch) => {
+    const name = patch.name.trim()
+    const description = patch.description.trim()
+    const max = Math.round(patch.maxMembers)
+    if (name.length < 1 || name.length > 30) return '그룹 이름은 1~30자로 입력해 주세요.'
+    if (description.length > 200) return '소개는 200자 이내로 입력해 주세요.'
+    if (!Number.isFinite(max) || max < 2 || max > 100) return '최대 인원은 2~100명으로 입력해 주세요.'
+
+    const { error } = await supabase
+      .from('groups')
+      .update({ name, description, max_members: max })
+      .eq('id', groupId)
+    if (error) return toKorean(error.message)
+    await get().loadGroups()
+    return null
+  },
+
+  // 그룹장: 초대 코드 재발급
+  regenerateCode: async (groupId) => {
+    const { error } = await supabase.rpc('regenerate_invite_code', { gid: groupId })
+    if (error) return toKorean(error.message)
+    await get().loadGroups()
+    return null
+  },
+
+  // 그룹장: 멤버 내보내기
+  kickMember: async (groupId, userId) => {
+    const { error } = await supabase
+      .from('group_members')
+      .delete()
+      .eq('group_id', groupId)
+      .eq('user_id', userId)
+    if (error) return toKorean(error.message)
     return null
   },
 }))

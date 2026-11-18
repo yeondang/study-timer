@@ -37,9 +37,10 @@ interface Props {
   members: GroupMember[]
   live: Record<string, LiveStatus>
   myId: string
+  onKick?: (m: GroupMember) => void // 그룹장일 때만 전달
 }
 
-export default function MemberStatusList({ members, live, myId }: Props) {
+export default function MemberStatusList({ members, live, myId, onKick }: Props) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000)
@@ -111,6 +112,15 @@ export default function MemberStatusList({ members, live, myId }: Props) {
                 </div>
                 <div className="text-xs text-slate-400">오늘</div>
               </div>
+
+              {onKick && m.userId !== myId && (
+                <button
+                  onClick={() => onKick(m)}
+                  className="ml-1 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-500 hover:border-red-300 hover:text-red-500"
+                >
+                  내보내기
+                </button>
+              )}
             </li>
           )
         })}

@@ -44,6 +44,8 @@ export interface SubjectGoal {
 export interface Group {
   id: string
   name: string
+  description: string
+  maxMembers: number
   inviteCode: string
   ownerId: string
 }
