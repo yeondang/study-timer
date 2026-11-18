@@ -1,6 +1,8 @@
 import { hexToRgb, rgbToHex } from '@/lib/color'
 
 export const DEFAULT_THEME = '#D97757'
+export type ThemeText = 'white' | 'black'
+export const DEFAULT_THEME_TEXT: ThemeText = 'white'
 
 export const THEME_PRESETS = [
   { name: '테라코타', hex: '#D97757' },
@@ -23,11 +25,6 @@ const mix = (a: RGB, b: RGB, t: number): RGB => [
 const WHITE: RGB = [255, 255, 255]
 const BLACK: RGB = [0, 0, 0]
 
-const luminance = ([r, g, b]: RGB) => (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
-// 이보다 밝으면 흰 글자가 잘 안 보이므로 글자 그림자를 켬
-const SHADOW_THRESHOLD = 0.55
-
 // 앱 전체의 "blue-*" 색을 사용자가 고른 색으로 덮어쓰기 (600 = 고른 색 그대로)
 export function applyTheme(hex: string) {
   const base = hexToRgb(hex)
@@ -39,7 +36,7 @@ export function applyTheme(hex: string) {
     [300, mix(base, WHITE, 0.5)],
     [400, mix(base, WHITE, 0.25)],
     [500, base],
-    [600, base], // 버튼, 선택된 메뉴: 고른 색 그대로
+    [600, base],
     [700, mix(base, BLACK, 0.12)], // 마우스를 올렸을 때만 살짝 어둡게
     [800, mix(base, BLACK, 0.3)],
     [900, mix(base, BLACK, 0.45)],
@@ -49,16 +46,12 @@ export function applyTheme(hex: string) {
   for (const [step, [r, g, b]] of steps) {
     root.style.setProperty(`--color-blue-${step}`, rgbToHex(r, g, b))
   }
-
-  // 밝은 색이면 흰 글자에 그림자를 붙여서 읽히게 함
-  const light = luminance(base) > SHADOW_THRESHOLD
-  root.style.setProperty(
-    '--theme-text-shadow',
-    light ? '0 1px 2px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.5)' : 'none'
-  )
 }
 
-// 밝은 색이라 글자 그림자가 적용되는지 (안내 문구용)
-export function isTooLight(hex: string): boolean {
-  return luminance(hexToRgb(hex)) > SHADOW_THRESHOLD
+// 테마 색 배경 위 글자색 적용
+export function applyThemeText(text: ThemeText) {
+  document.documentElement.style.setProperty(
+    '--theme-on-color',
+    text === 'black' ? '#000000' : '#ffffff'
+  )
 }
