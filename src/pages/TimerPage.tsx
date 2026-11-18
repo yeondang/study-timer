@@ -83,9 +83,10 @@ export default function TimerPage() {
         <div className="mt-1 text-2xl font-bold">{formatDuration(todayTotal)}</div>
       </div>
 
-      <QuickSearchWidget />
-
       <SubjectSelector />
+
+      <QuickSearchWidget />
+      
     </div>
   )
 }

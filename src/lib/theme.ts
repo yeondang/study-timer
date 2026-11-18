@@ -23,32 +23,42 @@ const mix = (a: RGB, b: RGB, t: number): RGB => [
 const WHITE: RGB = [255, 255, 255]
 const BLACK: RGB = [0, 0, 0]
 
-// 단계별로 흰색/검정과 섞는 비율 (500이 선택한 색 그대로)
-const STEPS: [number, RGB, number][] = [
-  [50, WHITE, 0.92],
-  [100, WHITE, 0.84],
-  [200, WHITE, 0.68],
-  [300, WHITE, 0.5],
-  [400, WHITE, 0.25],
-  [500, WHITE, 0],
-  [600, BLACK, 0.12],
-  [700, BLACK, 0.28],
-  [800, BLACK, 0.42],
-  [900, BLACK, 0.55],
-]
+const luminance = ([r, g, b]: RGB) => (0.299 * r + 0.587 * g + 0.114 * b) / 255
 
-// 앱 전체의 "blue-*" 색을 사용자가 고른 색으로 덮어쓰기
+// 이보다 밝으면 흰 글자가 잘 안 보이므로 글자 그림자를 켬
+const SHADOW_THRESHOLD = 0.55
+
+// 앱 전체의 "blue-*" 색을 사용자가 고른 색으로 덮어쓰기 (600 = 고른 색 그대로)
 export function applyTheme(hex: string) {
   const base = hexToRgb(hex)
+
+  const steps: [number, RGB][] = [
+    [50, mix(base, WHITE, 0.92)],
+    [100, mix(base, WHITE, 0.84)],
+    [200, mix(base, WHITE, 0.68)],
+    [300, mix(base, WHITE, 0.5)],
+    [400, mix(base, WHITE, 0.25)],
+    [500, base],
+    [600, base], // 버튼, 선택된 메뉴: 고른 색 그대로
+    [700, mix(base, BLACK, 0.12)], // 마우스를 올렸을 때만 살짝 어둡게
+    [800, mix(base, BLACK, 0.3)],
+    [900, mix(base, BLACK, 0.45)],
+  ]
+
   const root = document.documentElement
-  for (const [step, target, t] of STEPS) {
-    const [r, g, b] = mix(base, target, t)
+  for (const [step, [r, g, b]] of steps) {
     root.style.setProperty(`--color-blue-${step}`, rgbToHex(r, g, b))
   }
+
+  // 밝은 색이면 흰 글자에 그림자를 붙여서 읽히게 함
+  const light = luminance(base) > SHADOW_THRESHOLD
+  root.style.setProperty(
+    '--theme-text-shadow',
+    light ? '0 1px 2px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.5)' : 'none'
+  )
 }
 
-// 너무 밝은 색은 흰 글자 버튼이 안 보임
+// 밝은 색이라 글자 그림자가 적용되는지 (안내 문구용)
 export function isTooLight(hex: string): boolean {
-  const [r, g, b] = hexToRgb(hex)
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.72
+  return luminance(hexToRgb(hex)) > SHADOW_THRESHOLD
 }

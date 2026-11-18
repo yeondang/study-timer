@@ -30,8 +30,8 @@ export default function ThemePicker() {
       <ColorEditor color={color} onChange={setThemeColor} />
 
       {isTooLight(color) && (
-        <p className="mt-2 text-xs text-amber-600">
-          너무 밝은 색이라 버튼 글자가 잘 안 보일 수 있어요.
+        <p className="mt-2 text-xs text-slate-500">
+          밝은 색이라 버튼 글자가 잘 보이도록 글자에 그림자가 적용돼요.
         </p>
       )}
 
