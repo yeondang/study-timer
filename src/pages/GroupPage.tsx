@@ -4,6 +4,7 @@ import { useGroupMembers } from '@/hooks/useGroupMembers'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useGroupStore } from '@/store/useGroupStore'
 import type { GroupMember } from '@/types'
+import GroupHistory from '@/components/group/GroupHistory'
 
 export default function GroupPage() {
   const myId = useAuthStore((s) => s.session?.user.id) ?? ''
@@ -355,7 +356,9 @@ export default function GroupPage() {
                 )}
               </div>
             </section>
+            
           )}
+          {current && <GroupHistory groupId={current.id} members={members} myId={myId} />}
         </>
       )}
     </div>

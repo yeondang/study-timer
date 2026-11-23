@@ -48,6 +48,8 @@ interface SessionRow {
   duration_seconds: number
   away_count: number
   away_seconds: number
+  kind?: string | null
+  note?: string | null
 }
 
 function toSession(r: SessionRow): StudySession {
@@ -63,6 +65,8 @@ function toSession(r: SessionRow): StudySession {
     durationSeconds: r.duration_seconds,
     awayCount: r.away_count,
     awaySeconds: r.away_seconds,
+    kind: r.kind === 'manual' ? 'manual' : 'timer',
+    note: r.note ?? '',
   }
 }
 

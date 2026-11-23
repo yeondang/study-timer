@@ -12,14 +12,16 @@ export interface Subject {
 export interface StudySession {
   id: string
   subjectId: string
-  subjectName: string // 과목이 나중에 삭제돼도 통계에 이름이 남도록 같이 저장
+  subjectName: string
   subjectColor: string
   studyDate: string // 'yyyy-MM-dd'
-  startedAt: number // 시작 시각 (ms)
+  startedAt: number
   endedAt: number
-  durationSeconds: number
+  durationSeconds: number // 수동 차감이면 음수
   awayCount: number
   awaySeconds: number
+  kind: 'timer' | 'manual'
+  note: string
 }
 
 export interface Settings {

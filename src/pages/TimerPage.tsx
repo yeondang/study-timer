@@ -5,6 +5,7 @@ import { useElapsedSeconds } from '@/hooks/useElapsedSeconds'
 import { formatDuration } from '@/lib/time'
 import { useTimerStore } from '@/store/useTimerStore'
 import QuickSearchWidget from '@/components/tools/QuickSearchWidget'
+import AdjustTime from '@/components/timer/AdjustTime'
 
 export default function TimerPage() {
   const seconds = useElapsedSeconds()
@@ -81,6 +82,9 @@ export default function TimerPage() {
       <div className="rounded-2xl bg-white p-5 text-center shadow-sm">
         <div className="text-sm text-slate-500">오늘 누적 공부 시간</div>
         <div className="mt-1 text-2xl font-bold">{formatDuration(todayTotal)}</div>
+        <div className="mt-3">
+          <AdjustTime date={today} />
+        </div>
       </div>
 
       <SubjectSelector />

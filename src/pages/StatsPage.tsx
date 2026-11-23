@@ -24,6 +24,7 @@ import {
 } from '@/lib/stats'
 import { formatDuration } from '@/lib/time'
 import { useTimerStore } from '@/store/useTimerStore'
+import AdjustTime from '@/components/timer/AdjustTime'
 
 type Tab = 'day' | 'week' | 'month'
 
@@ -107,7 +108,10 @@ function DayView({
       <CalendarView secondsMap={secondsMap} selected={selected} onSelect={onSelect} />
 
       <section className="rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="font-semibold">{format(parseISO(selected), 'M월 d일')} 기록</h2>
+                <div className="flex items-center justify-between">
+          <h2 className="font-semibold">{format(parseISO(selected), 'M월 d일')} 기록</h2>
+          <AdjustTime date={selected} />
+        </div>
 
         {total === 0 ? (
           <p className="py-6 text-center text-sm text-slate-400">
