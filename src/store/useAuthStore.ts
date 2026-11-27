@@ -2,11 +2,11 @@ import { create } from 'zustand'
 import type { Session } from '@supabase/supabase-js'
 import { publishOffline } from '@/lib/liveStatus'
 import { supabase } from '@/lib/supabase'
+import { useAdminStore } from '@/store/useAdminStore'
 import { useGroupStore } from '@/store/useGroupStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
-import { useAdminStore } from '@/store/useAdminStore'
 
 interface AuthState {
   session: Session | null
@@ -31,6 +31,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
         usePlannerStore.getState().clearAll()
         useGroupStore.getState().clearAll()
         useProfileStore.getState().clearAll()
+        useAdminStore.getState().clear()
       }
     })
 
