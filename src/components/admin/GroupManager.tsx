@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { formatDuration } from '@/lib/time'
+import Avatar from '@/components/common/Avatar'
 
 interface GroupRow {
   g_id: string
@@ -19,6 +20,7 @@ interface MemberRow {
   m_uid: string
   m_nick: string | null
   m_email: string | null
+  m_avatar: string | null
   m_joined: string
   m_is_owner: boolean
   m_week_seconds: number | string
@@ -160,8 +162,11 @@ export default function GroupManager() {
                 {members.map((m) => (
                   <tr key={m.m_uid} className="border-t border-slate-100">
                     <td className="py-2 font-medium">
-                      {m.m_nick ?? '-'}
-                      {m.m_is_owner && <span className="ml-1 text-xs text-slate-400">👑</span>}
+                      <div className="flex items-center gap-2">
+                        <Avatar url={m.m_avatar} name={m.m_nick ?? m.m_email ?? '?'} size={28} />
+                        <span>{m.m_nick ?? '-'}</span>
+                        {m.m_is_owner && <span className="text-xs text-slate-400">👑</span>}
+                      </div>
                     </td>
                     <td className="max-w-[180px] truncate text-slate-500">{m.m_email}</td>
                     <td className="text-xs">{STATUS[m.m_status] ?? m.m_status}</td>
