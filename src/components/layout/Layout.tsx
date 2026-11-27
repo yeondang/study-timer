@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
 import Avatar from '@/components/common/Avatar'
 import BugReportButton from '@/components/common/BugReportButton'
 import { useLiveStatusSync } from '@/hooks/useLiveStatusSync'
