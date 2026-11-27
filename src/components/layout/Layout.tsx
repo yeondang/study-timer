@@ -7,6 +7,8 @@ import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import AnnouncementBanner from '@/components/common/AnnouncementBanner'
+import { useAdminStore } from '@/store/useAdminStore'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -32,13 +34,17 @@ export default function Layout() {
   const plannerError = usePlannerStore((s) => s.loadError)
   const nickname = useProfileStore((s) => s.nickname)
   const avatarUrl = useProfileStore((s) => s.avatarUrl)
+  const isAdmin = useAdminStore((s) => s.isAdmin)
+  const checkAdmin = useAdminStore((s) => s.check)
+  const allMenus = isAdmin ? [...menus, { to: '/admin', label: '관리자' }] : menus
 
   useEffect(() => {
     if (!userId) return
     loadTimer()
     loadPlanner()
     loadProfile()
-  }, [userId, loadTimer, loadPlanner, loadProfile])
+    checkAdmin()
+  }, [userId, loadTimer, loadPlanner, loadProfile, checkAdmin])
 
   const error = timerError ?? plannerError
 
@@ -73,7 +79,7 @@ export default function Layout() {
       <header className="border-b bg-white">
         <nav className="mx-auto flex max-w-4xl flex-wrap items-center gap-1 px-4 py-3">
           <span className="mr-4 font-bold text-blue-600">StudyTimer</span>
-          {menus.map((m) => (
+          {allMenus.map((m) => (
             <NavLink
               key={m.to}
               to={m.to}
@@ -106,6 +112,7 @@ export default function Layout() {
           </div>
         </nav>
       </header>
+      <AnnouncementBanner />
       <main className="mx-auto max-w-4xl">
         <Outlet />
       </main>

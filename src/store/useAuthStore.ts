@@ -6,6 +6,7 @@ import { useGroupStore } from '@/store/useGroupStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
+import { useAdminStore } from '@/store/useAdminStore'
 
 interface AuthState {
   session: Session | null

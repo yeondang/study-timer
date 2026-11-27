@@ -72,7 +72,15 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="4. 개인정보의 제3자 제공">
+      <LegalSection title="4.운영자의 정보 열람">
+        <p>
+          운영자는 서비스 운영, 문의·제보 처리, 부정 이용 방지에 필요한 범위에서 이용자의 계정 정보(이메일,
+          닉네임)와 공부 기록을 조회할 수 있으며, 부정한 기록은 삭제할 수 있습니다. 조회 및 삭제 내역은
+          접근 기록으로 보관합니다.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="5. 개인정보의 제3자 제공">
         <p>
           운영자는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다. 다만 법령에 근거가 있거나 수사기관이
           적법한 절차로 요청하는 경우는 예외입니다.
@@ -84,7 +92,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="5. 개인정보 처리 위탁 및 국외 이전">
+      <LegalSection title="6. 개인정보 처리 위탁 및 국외 이전">
         <p>서비스 제공을 위해 아래 사업자의 시스템을 이용하며, 개인정보가 국외에서 처리·보관됩니다.</p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px] border-collapse text-left text-xs">
@@ -124,7 +132,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="6. 개인정보의 파기">
+      <LegalSection title="7. 개인정보의 파기">
         <p>
           탈퇴 시 계정과 관련 데이터(프로필, 공부 기록, 할 일, 그룹 소속, 상태, 제보 등)는 데이터베이스에서 삭제되며,
           삭제된 정보는 복구할 수 없습니다. 이용자가 올린 프로필 사진도 함께 삭제합니다. 내가 만든 그룹은 함께
@@ -132,14 +140,14 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="7. 이용자의 권리">
+      <LegalSection title="8. 이용자의 권리">
         <p>
           이용자는 언제든지 자신의 개인정보를 조회·수정(설정 화면의 닉네임, 사진, 상태 메시지)하거나 삭제(회원
           탈퇴)할 수 있으며, 그 밖의 열람·정정·삭제·처리정지 요구는 아래 연락처로 할 수 있습니다.
         </p>
       </LegalSection>
 
-      <LegalSection title="8. 브라우저 저장소 사용">
+      <LegalSection title="9. 브라우저 저장소 사용">
         <p>
           서비스는 로그인 유지, 진행 중인 타이머 상태, 테마 색상 설정을 위해 이용자 기기의 브라우저 저장소
           (localStorage 등)를 사용합니다. 광고나 행태 분석을 위한 추적 쿠키는 사용하지 않습니다. 브라우저 설정에서
@@ -147,7 +155,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="9. 안전성 확보 조치">
+      <LegalSection title="10. 안전성 확보 조치">
         <ul className="list-disc pl-5">
           <li>전송 구간 암호화(HTTPS)와 비밀번호 암호화 저장</li>
           <li>데이터베이스 접근 통제(이용자는 본인 데이터와 같은 그룹원에게 공개된 정보만 조회 가능)</li>
@@ -155,11 +163,11 @@ export default function PrivacyPage() {
         </ul>
       </LegalSection>
 
-      <LegalSection title="10. 만 14세 미만 아동">
+      <LegalSection title="11. 만 14세 미만 아동">
         <p>서비스는 만 14세 이상만 이용할 수 있으며, 만 14세 미만 아동의 개인정보는 수집하지 않습니다.</p>
       </LegalSection>
 
-      <LegalSection title="11. 개인정보 보호책임자 및 문의">
+      <LegalSection title="12. 개인정보 보호책임자 및 문의">
         <p>책임자: {LEGAL.operator}</p>
         <p>이메일: {LEGAL.contactEmail}</p>
         <p>
@@ -168,7 +176,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="12. 방침의 변경">
+      <LegalSection title="13. 방침의 변경">
         <p>이 방침이 변경되면 시행일 7일 전부터 서비스 화면에 공지합니다.</p>
       </LegalSection>
     </LegalLayout>
