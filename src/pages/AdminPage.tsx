@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import AdminStats from '@/components/admin/AdminStats'
 import AnnouncementManager from '@/components/admin/AnnouncementManager'
+import GroupManager from '@/components/admin/GroupManager'
 import ReportManager from '@/components/admin/ReportManager'
 import UserManager from '@/components/admin/UserManager'
 
-type Tab = 'dash' | 'notice' | 'users' | 'reports'
+type Tab = 'dash' | 'notice' | 'users' | 'groups' | 'reports'
 
 const TABS: { v: Tab; label: string }[] = [
   { v: 'dash', label: '현황' },
   { v: 'notice', label: '공지' },
   { v: 'users', label: '유저' },
+  { v: 'groups', label: '그룹' },
   { v: 'reports', label: '제보' },
 ]
 
@@ -20,7 +22,7 @@ export default function AdminPage() {
     <div className="space-y-4 p-6">
       <h1 className="text-2xl font-bold">🛠 관리자</h1>
 
-      <div className="inline-flex gap-1 rounded-xl bg-slate-200/60 p-1">
+      <div className="inline-flex flex-wrap gap-1 rounded-xl bg-slate-200/60 p-1">
         {TABS.map((t) => (
           <button
             key={t.v}
@@ -37,6 +39,7 @@ export default function AdminPage() {
       {tab === 'dash' && <AdminStats />}
       {tab === 'notice' && <AnnouncementManager />}
       {tab === 'users' && <UserManager />}
+      {tab === 'groups' && <GroupManager />}
       {tab === 'reports' && <ReportManager />}
     </div>
   )
