@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from '@/components/layout/Layout'
 import RequireAuth from '@/components/layout/RequireAuth'
+import RequireAdmin from '@/components/layout/RequireAdmin'
 import LoginPage from '@/pages/LoginPage'
+import TermsPage from '@/pages/TermsPage'
+import PrivacyPage from '@/pages/PrivacyPage'
 import TimerPage from '@/pages/TimerPage'
 import PlannerPage from '@/pages/PlannerPage'
 import StatsPage from '@/pages/StatsPage'
 import GroupPage from '@/pages/GroupPage'
 import SettingsPage from '@/pages/SettingsPage'
-import { useAuthStore } from '@/store/useAuthStore'
-import TermsPage from '@/pages/TermsPage'
-import PrivacyPage from '@/pages/PrivacyPage'
-import RequireAdmin from '@/components/layout/RequireAdmin'
 import AdminPage from '@/pages/AdminPage'
+import { useAuthStore } from '@/store/useAuthStore'
 
 export default function App() {
   const init = useAuthStore((s) => s.init)
@@ -24,7 +24,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/terms" element={<TermsPage />} /> 
+        <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
 
         {/* 로그인해야 들어갈 수 있는 화면들 */}
@@ -35,11 +35,11 @@ export default function App() {
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route element={<RequireAdmin />}>
-            <Route path="/admin" element={<AdminPage />} />
-          </Route>
-        </Route>
+
+            {/* 관리자만 */}
+            <Route element={<RequireAdmin />}>
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
