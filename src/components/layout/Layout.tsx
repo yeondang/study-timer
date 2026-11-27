@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useTimerStore } from '@/store/useTimerStore'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 
 const menus = [
   { to: '/', label: '타이머' },
@@ -109,6 +110,11 @@ export default function Layout() {
       <main className="mx-auto max-w-4xl">
         <Outlet />
       </main>
+      <footer className="mx-auto max-w-4xl px-6 pb-8 pt-2 text-xs text-slate-400">
+        <Link to="/terms" className="hover:underline">이용약관</Link>
+        <span className="mx-2">·</span>
+        <Link to="/privacy" className="hover:underline">개인정보처리방침</Link>
+      </footer>
       <BugReportButton />
     </div>
   )

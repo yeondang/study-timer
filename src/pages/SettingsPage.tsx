@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Avatar from '@/components/common/Avatar'
 import ThemePicker from '@/components/common/ThemePicker'
 import { useProfileStore } from '@/store/useProfileStore'
+import { supabase } from '@/lib/supabase'
 
 const EMOJIS = ['📚', '✏️', '💻', '🧠', '🔥', '🎯', '☕', '🍚', '🎧', '😴', '💪', '🌙']
 
@@ -56,6 +57,29 @@ export default function SettingsPage() {
   const saveStatus = async (emoji = emojiInput, text = textInput) => {
     const err = await setCustomStatus(emoji, text)
     show('status', err, '상태를 저장했어요. 그룹원에게 바로 보여요.')
+  }
+  const [deleting, setDeleting] = useState(false)
+
+  const handleDeleteAccount = async () => {
+    const ok = confirm(
+      '정말 탈퇴할까요?\n\n계정과 공부 기록, 할 일, 프로필 등 모든 데이터가 삭제되고 복구할 수 없어요.\n내가 만든 그룹은 삭제되어 다른 멤버도 그룹에서 빠져요.'
+    )
+    if (!ok) return
+    if (prompt('확인을 위해 "탈퇴"라고 입력해 주세요.') !== '탈퇴') return
+
+    setDeleting(true)
+    const { data } = await supabase.auth.getSession()
+    const uid = data.session?.user.id
+    if (uid) await supabase.storage.from('avatars').remove([`${uid}/avatar.jpg`])
+
+    const { error } = await supabase.rpc('delete_my_account')
+    if (error) {
+      setDeleting(false)
+      alert(`탈퇴하지 못했어요: ${error.message}`)
+      return
+    }
+    localStorage.removeItem('study-timer-runtime')
+    await supabase.auth.signOut()
   }
 
   const Msg = ({ area }: { area: string }) =>
@@ -210,6 +234,20 @@ export default function SettingsPage() {
           버튼, 메뉴 등 앱 전체의 포인트 색을 바꿔요. 이 기기에 저장돼요.
         </p>
         <ThemePicker />
+      </section>
+      {/* 회원 탈퇴 */}
+      <section className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+        <h2 className="font-semibold text-red-600">회원 탈퇴</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          탈퇴하면 계정과 모든 데이터가 삭제되고 복구할 수 없어요.
+        </p>
+        <button
+          onClick={handleDeleteAccount}
+          disabled={deleting}
+          className="mt-3 rounded-lg border border-red-300 px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+        >
+          {deleting ? '처리 중...' : '회원 탈퇴'}
+        </button>
       </section>
     </div>
   )

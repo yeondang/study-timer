@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/useAuthStore'
+import { Link, Navigate } from 'react-router-dom'
 
 type Mode = 'login' | 'signup'
 
@@ -25,6 +25,8 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
+  const [agreed, setAgreed] = useState(false)
+  const CONSENT_ERROR = '이용약관과 개인정보처리방침에 동의해야 가입할 수 있어요.'
 
   if (session) return <Navigate to="/" replace />
 
@@ -32,6 +34,10 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setInfo('')
+    if (mode === 'signup' && !agreed) {
+      setError(CONSENT_ERROR)
+      return
+    }
     setBusy(true)
 
     if (mode === 'login') {
@@ -53,6 +59,10 @@ export default function LoginPage() {
 
   const handleGoogle = async () => {
     setError('')
+    if (mode === 'signup' && !agreed) {
+      setError(CONSENT_ERROR)
+      return
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },
@@ -88,7 +98,27 @@ export default function LoginPage() {
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
           />
-
+          {mode === 'signup' && (
+            <label className="flex items-start gap-2 text-xs text-slate-600">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span>
+                (필수) 만 14세 이상이며{' '}
+                <Link to="/terms" target="_blank" className="text-blue-600 underline">
+                  이용약관
+                </Link>
+                과{' '}
+                <Link to="/privacy" target="_blank" className="text-blue-600 underline">
+                  개인정보처리방침
+                </Link>
+                에 동의합니다.
+              </span>
+            </label>
+          )}
           {error && <p className="text-sm text-red-600">{error}</p>}
           {info && <p className="text-sm text-green-600">{info}</p>}
 
@@ -116,6 +146,14 @@ export default function LoginPage() {
           Google로 계속하기
         </button>
 
+        {mode === 'login' && (
+          <p className="mt-3 text-center text-xs text-slate-400">
+            로그인하면{' '}
+            <Link to="/terms" target="_blank" className="underline">이용약관</Link>과{' '}
+            <Link to="/privacy" target="_blank" className="underline">개인정보처리방침</Link>에
+            동의한 것으로 봅니다.
+          </p>
+        )}
         <p className="mt-6 text-center text-sm text-slate-500">
           {mode === 'login' ? '계정이 없나요?' : '이미 계정이 있나요?'}{' '}
           <button
